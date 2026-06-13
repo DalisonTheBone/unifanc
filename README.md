@@ -6,7 +6,7 @@ Universal, module based fan control program for linux. Rewrite of unifan to c, w
 
 ## Install
 Dependencys: gcc
-Installing unifan is pretty simple:
+**Install Commands:**:
 ```sh
 git clone https://github.com/DalisonTheBone/unifan.git
 cd unifan
