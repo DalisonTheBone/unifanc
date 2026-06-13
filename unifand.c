@@ -34,6 +34,14 @@ int main_paths_exist(void) {
     ) ? 0 : 1;
 }
 
+char concat(char s1[], char s2[]) {
+    char return_string[strlen(s1) + strlen(s2) + 1];
+    strcpy(return_string, s1);
+    strcat(return_string, s2);
+
+    return *return_string;
+}
+
 // Config Functions
 int get_fan_speed(void) {
 
@@ -107,7 +115,7 @@ int get_fan_speed(void) {
 // Module Functions
 char init_module(void) {
     char cmd[35];
-    strcpy(cmd, "/etc/unifand/module");
+    strcpy(cmd, modulePath);
     strcat(cmd, " i");
     system(cmd);
 
@@ -116,7 +124,7 @@ char init_module(void) {
 
 int get_temp(void) {
     char cmd[35];
-    strcpy(cmd, "/etc/unifand/module");
+    strcpy(cmd, modulePath);
     strcat(cmd, " g");
     system(cmd);
 
@@ -142,7 +150,7 @@ int set_fan_speed(void) {
 
     sprintf(Speed, "%d", fan_speed);
 
-    strcpy(cmd, "/etc/unifand/module");
+    strcpy(cmd, modulePath);
     strcat(cmd, " s ");
     strcat(cmd, Speed);
 

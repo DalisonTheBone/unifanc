@@ -15,7 +15,6 @@ int hwmon_cnt = 0;
 
 // Functions
 int find_fc_hwmon(void) {
-
     DIR *dir = opendir("/sys/class/hwmon/");
 
     if (dir == NULL) {return 1;}
@@ -130,7 +129,6 @@ int get_temp(void) {
 int set_speed(int speed) {
     
     check_availablity();
-    
 
     if (hwmon_fc_available) {
 
@@ -147,19 +145,14 @@ int set_speed(int speed) {
     }
 
     if (!hwmon_fc_available && proc_fc_available) {
-        printf("test");
+        
         char proc_location[] = "/proc/acpi/ibm/fan";
-
-        char speed_string[11] = "";
-
-        sprintf(speed_string, "%d", speed*8/100);
 
         FILE *fptr;
         fptr = fopen(proc_location, "w");
-        fprintf(fptr, "level %s", speed_string);
-        if (speed*8/100 == 0) {fprintf(fptr, "level auto");}
-        if (speed*8/100 == 8) {fprintf(fptr, "level disengaged");}
-        if (speed*8/100 != 0 && speed*8/100 != 8) {fprintf(fptr, "level %d", speed*8/100);}
+
+        if (speed*7/100 == 0) {fprintf(fptr, "level auto");}
+        if (speed*7/100 != 0) {fprintf(fptr, "level %d", speed*7/100);}
 
         fclose(fptr); 
 
@@ -170,9 +163,6 @@ int set_speed(int speed) {
 
 // init
 int main(int argc, char *argv[]) {
-    //check_availablity();
-    //printf("%s", fc_hwmon);
-    if (hwmon_fc_available) {printf("yay");}
     if (argc == 1) {return 1;}
 
     if (*argv[1] == 'i') {init();}
