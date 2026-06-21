@@ -13,7 +13,7 @@ bool proc_fc_available = false;
 char fc_hwmon[8] = {0};
 int hwmon_cnt = 0;
 
-// Functions
+// Functions 
 int find_fc_hwmon(void) {
     DIR *dir = opendir("/sys/class/hwmon/");
 
