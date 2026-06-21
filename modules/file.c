@@ -19,7 +19,7 @@ bool is_valid_path(char file_path[]) {return access(file_path, F_OK) == 0;}
 // Reads file at path and returns file
 file read_file(char file_path[]) {
     file return_file = {
-        true, 0, malloc(0)
+        true, 0, NULL
     };
 
     if (!is_valid_path(file_path)) {return_file.is_valid = false; return return_file;}
@@ -77,6 +77,8 @@ file read_file(char file_path[]) {
     }
     
     fclose(file_ptr);
+
+    free(bytes);
 
     return return_file;
 }
