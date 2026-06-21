@@ -3,13 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
-
-// Types
-typedef struct {
-    bool is_valid;
-    int size;
-    char *bytes;
-} file;
+#include "file.h"
 
 ///* Functions *///
 
@@ -28,7 +22,6 @@ file read_file(char file_path[]) {
 
     if (file_ptr == NULL) {
         return_file.is_valid = false;
-        fclose(file_ptr);
         return return_file;
     }
 
@@ -61,7 +54,7 @@ file read_file(char file_path[]) {
             
             char *new_byte_buffer = malloc(return_file.size);
 
-            memcpy(new_byte_buffer, return_file.bytes, return_file.size - byte_index + 1);
+            memcpy(new_byte_buffer, return_file.bytes, return_file.size - byte_index);
             memmove(new_byte_buffer + (return_file.size - byte_index), bytes, byte_index);
 
             free(return_file.bytes);
