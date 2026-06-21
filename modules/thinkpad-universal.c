@@ -10,7 +10,7 @@ bool hwmon_sensors_available = false;
 bool hwmon_fc_available = false;
 bool proc_fc_available = false;
 
-char fc_hwmon[7] = {0};
+char fc_hwmon[8] = {0};
 int hwmon_cnt = 0;
 
 // Functions
@@ -35,6 +35,8 @@ int find_fc_hwmon(void) {
         }
 
     }
+
+    closedir(dir);
 
     return 1;
 }
