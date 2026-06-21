@@ -11,9 +11,12 @@ typedef struct {
     char *bytes;
 } file;
 
-// Functions
+///* Functions *///
+
+// Checks if file and path to file exist
 bool is_valid_path(char file_path[]) {return access(file_path, F_OK) == 0;}
 
+// Reads file at path and returns file
 file read_file(char file_path[]) {
     file return_file = {
         true, 0, malloc(0)
@@ -78,7 +81,8 @@ file read_file(char file_path[]) {
     return return_file;
 }
 
-bool write_file(char file_path[], char *to_write) {
+// Writes bytes to file path if file and file path exist
+bool write_file(char file_path[], char *bytes) {
 
     if (!is_valid_path(file_path)) {return false;}
 
@@ -86,7 +90,7 @@ bool write_file(char file_path[], char *to_write) {
 
     if (file_ptr == NULL) {return false;}
 
-    fputs(to_write, file_ptr);
+    fputs(bytes, file_ptr);
     fclose(file_ptr);
 
     return true;
