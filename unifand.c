@@ -2,8 +2,8 @@
 #include "modules/file.c"
 
 int main(void) {
-    file test = read_file("/etc/unifand/unifand.conf");
+    //file test = read_file("/etc/unifand/unifand.conf");
 
     
-    printf("%s", test.bytes);
+    printf("%d", is_valid_path("/etc/unifand/"));
 }
