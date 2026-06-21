@@ -119,7 +119,9 @@ config_file get_config(char file_path[]) {
         op current_op = parse_char(config, index);
         index += current_op.length;
         if (current_op.token_type == white_space) {continue;}
-        printf("%d: [%d: %s]\n\n", index, current_op.token_type, current_op.token);
+        if (current_op.token_type == new_line) {continue;}
+        if (current_op.token_type == line_comment) {continue;}
+        printf("%s\n", current_op.token);
 
     }
     printf("%d\n", config.size);
