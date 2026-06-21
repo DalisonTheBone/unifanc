@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
 
 // Types
 typedef struct {
@@ -11,7 +12,7 @@ typedef struct {
 } file;
 
 // Functions
-bool is_valid_path(char file_path[]) {return true;}
+bool is_valid_path(char file_path[]) {return access(file_path, F_OK) == 0;}
 
 file read_file(char file_path[]) {
     file return_file = {
@@ -77,6 +78,16 @@ file read_file(char file_path[]) {
     return return_file;
 }
 
-bool write_file(char path[], file to_write) {
-    return false;
+bool write_file(char file_path[], char *to_write) {
+
+    if (!is_valid_path(file_path)) {return false;}
+
+    FILE *file_ptr = fopen(file_path, "wb");
+
+    if (file_ptr == NULL) {return false;}
+
+    fputs(to_write, file_ptr);
+    fclose(file_ptr);
+
+    return true;
 }
