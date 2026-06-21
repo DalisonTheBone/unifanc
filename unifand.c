@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include "modules/modules.c"
+#include "modules/config.h"
 
 int main(void) {
-    //file test = read_file("/etc/unifand/unifand.conf");
-    cmd_output responce = run_command("echo Hello World!");
+    config_file test = get_config("unifand.conf");
+    
 
-    printf("%s", responce.bytes);
+    printf("done!");
     
 }
