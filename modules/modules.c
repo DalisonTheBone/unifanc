@@ -76,7 +76,7 @@ int get_temps(char module_path[]) {
     char *cmd = malloc(len + 3);
     memmove(cmd, module_path, len);
     memmove(cmd + len, " g", 3);
-    printf("%s\n", cmd);
+    //printf("%s\n", cmd);
     cmd_output cmd_responce = run_command(cmd);
     free(cmd);
 
@@ -84,11 +84,24 @@ int get_temps(char module_path[]) {
 
 } 
 
+void init_module(char module_path[]) {
+
+    int len = strlen(module_path);
+
+    char *cmd = malloc(len + 3);
+    memmove(cmd, module_path, len);
+    memmove(cmd + len, " g", 3);
+    //printf("%s\n", cmd);
+    cmd_output cmd_responce = run_command(cmd);
+    free(cmd);
+
+} 
+
 bool set_fan_speed(char module_path[], int percent) {
 
     char *cmd = malloc(strlen(module_path) + 7);
     sprintf(cmd, "%s s %d", module_path, percent);
-    printf("%s\n",cmd);
+    //printf("%s\n",cmd);
     run_command(cmd);
     free(cmd);
 

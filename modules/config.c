@@ -6,17 +6,14 @@
 
 // Op
 typedef enum {
-    white_space = 0, //
-    new_line = 1,
-    arg_key = 2,
-    arg_val = 3,
-    arg_sep = 4,
-    arg_end = 5,
-    brac_open = 6,
-    brac_close = 7,
-    sect_name = 8,
-    line_comment = 9,
-    unknown_op = 10
+    white_space,
+    new_line,
+    arg_sep,
+    arg_end,
+    brac_open,
+    brac_close,
+    line_comment,
+    unknown_op
 } ops;
 
 typedef struct {
@@ -282,4 +279,35 @@ bool free_config(config_file config) {
     free(config.sections);
 
     return true;
+}
+
+range parse_range(char range_string[], size_t string_size) {
+    range range = {false, 0,0};
+
+    char min_holder[32];
+    char max_holder[32];
+    bool has_seperater = false;
+
+    int holder_index = 0;
+
+    if (range_string[0] == '[' && range_string[string_size-1] == ']') {
+
+        for (int i=1; i<string_size-1; i++) {
+
+            if (range_string[i] == ',') {has_seperater = true; holder_index = 0; continue;}
+
+            if (!has_seperater) {min_holder[holder_index] = range_string[i]; holder_index++;}
+            if (has_seperater) {max_holder[holder_index] = range_string[i]; holder_index++;}
+
+        }
+
+        if (has_seperater) {
+            range.success = true;
+            range.min = atoi(min_holder);
+            range.max = atoi(max_holder);
+        }
+
+    }
+
+    return range;
 }
