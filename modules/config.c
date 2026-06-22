@@ -25,6 +25,11 @@ typedef struct {
     char *token;
 } op;
 
+typedef struct {
+    int length;
+    op *list;
+} op_list;
+
 // Functions
 
 static ops get_char_token(file config, int index) {
@@ -103,16 +108,24 @@ static op parse_char(file config, int index) {
 
 }
 
-config_file get_config(char file_path[]) {
+static op_list get_op_list(file config) {
 
-    config_file return_config = {0, NULL};
-    file config = read_file(file_path);
-
-    if (!config.is_valid) {return return_config;}
+    op_list return_list = {0, NULL};
+    op *buffer = malloc(sizeof(op)*50);
 
     int index = 0;
-
+    int buffer_index = 0;
     while (true) {
+        
+        if (buffer_index >= 50) {
+
+            op *temp = malloc(return_list.length*sizeof(op));
+            memmove(temp, return_list.list, (return_list.length - buffer_index)*sizeof(op));
+            memmove(temp + ((return_list.length - buffer_index)*sizeof(op)), buffer, buffer_index*sizeof(op));
+            free(return_list.list);
+            return_list.list = temp;
+
+        }
 
         if (index >= config.size) {break;}
 
@@ -121,10 +134,27 @@ config_file get_config(char file_path[]) {
         if (current_op.token_type == white_space) {continue;}
         if (current_op.token_type == new_line) {continue;}
         if (current_op.token_type == line_comment) {continue;}
-        printf("%s\n", current_op.token);
+        return_list.length++;
+
+        buffer[buffer_index] = current_op;
+        buffer_index++;
 
     }
-    printf("%d\n", config.size);
+
+    return return_list;
+
+}
+
+config_file get_config(char file_path[]) {
+
+    config_file return_config = {0, NULL};
+    file config = read_file(file_path);
+
+    if (!config.is_valid) {return return_config;}
+
+    op_list list = get_op_list(config);
+    
+    printf("%d\n", list.length);
     return return_config;
 
 }
