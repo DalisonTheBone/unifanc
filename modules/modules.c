@@ -4,11 +4,9 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "modules.h"
+
 // Types
-typedef struct {
-    int size;
-    char *bytes;
-} cmd_output;
 
 // Functions
 
@@ -71,4 +69,29 @@ cmd_output run_command(char args[]) {
 
 }
 
+int get_temps(char module_path[]) {
+
+    int len = strlen(module_path);
+
+    char *cmd = malloc(len + 3);
+    memmove(cmd, module_path, len);
+    memmove(cmd + len, " g", 3);
+    printf("%s\n", cmd);
+    cmd_output cmd_responce = run_command(cmd);
+    free(cmd);
+
+    return atoi(cmd_responce.bytes);
+
+} 
+
+bool set_fan_speed(char module_path[], int percent) {
+
+    char *cmd = malloc(strlen(module_path) + 7);
+    sprintf(cmd, "%s s %d", module_path, percent);
+    printf("%s\n",cmd);
+    run_command(cmd);
+    free(cmd);
+
+    return true;
+}
 
