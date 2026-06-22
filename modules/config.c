@@ -119,23 +119,29 @@ static op_list get_op_list(file config) {
 
         if (buffer_index >= 50) {
 
-            op *temp = malloc(return_list.length*sizeof(op));
-            memmove(temp, return_list.list, (return_list.length - buffer_index)*sizeof(op));
-            memmove(temp + ((return_list.length - buffer_index)*sizeof(op)), buffer, buffer_index*sizeof(op));
+            op *temp = realloc(return_list.list, return_list.length*sizeof(op));
+            memcpy(temp + ((return_list.length - buffer_index)*sizeof(op)), buffer, buffer_index*sizeof(op));
             free(return_list.list);
             return_list.list = temp;
 
         }
 
-        if (index >= config.size) {break;}
+        if (index >= config.size) {
+            
+            op *temp = realloc(return_list.list, return_list.length*sizeof(op));
+            memcpy(temp + ((return_list.length - buffer_index)*sizeof(op)), buffer, buffer_index*sizeof(op));
+            free(return_list.list);
+            return_list.list = temp;
+            break;
+        }
 
         op current_op = parse_char(config, index);
         index += current_op.length;
         if (current_op.token_type == white_space) {free(current_op.token); continue;}
         if (current_op.token_type == new_line) {free(current_op.token); continue;}
         if (current_op.token_type == line_comment) {free(current_op.token); continue;}
+        
         return_list.length++;
-
         buffer[buffer_index] = current_op;
         buffer_index++;
 
@@ -154,7 +160,7 @@ config_file get_config(char file_path[]) {
 
     op_list list = get_op_list(config);
     
-    printf("%d\n", list.length);
+    printf("%s\n", list.list[1].token);
     return return_config;
 
 }
