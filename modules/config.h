@@ -11,14 +11,17 @@ typedef struct {
 } string;
 
 typedef struct {
-    string key;
-    string value;
+    size_t key_size;
+    size_t value_size;
+
+    char *key;
+    char *value;
 } config_argument;
 
 typedef struct {
-    string section_name;
-
+    size_t name_len;
     size_t argument_cnt;
+    char *section_name;
     config_argument *arguments;
 } config_section;
 

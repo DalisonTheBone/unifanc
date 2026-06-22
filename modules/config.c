@@ -118,10 +118,10 @@ static op_list get_op_list(file config) {
     while (true) {
 
         if (buffer_index >= 50) {
-
+            
             op *temp = realloc(return_list.list, return_list.length*sizeof(op));
             memcpy(temp + ((return_list.length - buffer_index)*sizeof(op)), buffer, buffer_index*sizeof(op));
-            free(return_list.list);
+            //free(return_list.list);
             return_list.list = temp;
 
         }
@@ -130,7 +130,7 @@ static op_list get_op_list(file config) {
             
             op *temp = realloc(return_list.list, return_list.length*sizeof(op));
             memcpy(temp + ((return_list.length - buffer_index)*sizeof(op)), buffer, buffer_index*sizeof(op));
-            free(return_list.list);
+            //free(return_list.list);
             return_list.list = temp;
             break;
         }
@@ -159,9 +159,87 @@ config_file get_config(char file_path[]) {
     if (!config.is_valid) {return return_config;}
 
     op_list list = get_op_list(config);
-    
-    printf("%s\n", list.list[1].token);
-    return return_config;
 
+    int token_index = 0;
+
+    size_t section_name_len = 0;
+    char *section_name = NULL;
+
+    size_t arg_cnt = 0;
+    config_argument *arguments = NULL;
+
+    while (true) {
+
+        if (token_index >= list.length) {
+            config_section temp_section = {section_name_len, arg_cnt, section_name, arguments};
+            return_config.section_cnt++;
+            config_section *temp_section_list = realloc(return_config.sections, return_config.section_cnt*sizeof(config_section));
+            temp_section_list[return_config.section_cnt-1] = temp_section;
+
+            //free(return_config.sections);
+            return_config.sections = temp_section_list;
+
+            arg_cnt = 0;
+            arguments = NULL;
+            break;
+        }
+
+        op current_token = list.list[token_index];
+
+        if (current_token.token_type == brac_open && !(token_index + 3 > list.length)) {
+
+            op next_token = list.list[token_index+1];
+            op after_next_token = list.list[token_index+2];
+
+            if (next_token.token_type == unknown_op && after_next_token.token_type == brac_close) {
+                
+                if (section_name != NULL) {
+
+                    config_section temp_section = {section_name_len, arg_cnt, section_name, arguments};
+                    return_config.section_cnt++;
+                    config_section *temp_section_list = realloc(return_config.sections, return_config.section_cnt*sizeof(config_section));
+                    temp_section_list[return_config.section_cnt-1] = temp_section;
+
+                    //free(return_config.sections);
+                    return_config.sections = temp_section_list;
+
+                    arg_cnt = 0;
+                    arguments = NULL;
+
+                }
+                
+                token_index += 3;
+                section_name = next_token.token;
+                section_name_len = next_token.length;
+                continue;
+            }
+
+        }
+
+        if (current_token.token_type == arg_end && !(token_index - 3 < 0)) {
+
+            op value_token = list.list[token_index-1];
+            op sep_token = list.list[token_index-2];
+            op key_token = list.list[token_index-3];
+
+            if (value_token.token_type == unknown_op && sep_token.token_type == arg_sep && key_token.token_type == unknown_op) {
+
+                config_argument temp_arg = {key_token.length, value_token.length, key_token.token, value_token.token};
+                arg_cnt++;
+                config_argument *temp_arguments = realloc(arguments, arg_cnt*sizeof(config_argument));
+                temp_arguments[arg_cnt-1] = temp_arg;
+
+                //free(arguments);
+                arguments = temp_arguments;
+
+            }
+
+        }
+
+        token_index++;
+
+    }
+
+    return return_config;
 }
 
