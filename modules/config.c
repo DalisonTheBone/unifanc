@@ -239,15 +239,16 @@ config_file get_config(char file_path[]) {
         token_index++;
 
     }
-
+    free(config.bytes);
     return return_config;
 }
 
 config_section get_section(config_file config, char section_name[]) {
 
-    for (int i=0;i<config.section_cnt;i++) {
+    for (size_t i=0;i<config.section_cnt;i++) {
         config_section section = config.sections[i];
-        if (section.section_name == section_name) {
+        
+        if (memcmp(section.section_name, section_name, section.name_len) == 0) {
             return section;
         }
 
@@ -261,11 +262,11 @@ config_section get_section(config_file config, char section_name[]) {
 
 bool free_config(config_file config) {
 
-    for (int sec=0;sec<config.section_cnt;sec++) {
+    for (size_t sec=0;sec<config.section_cnt;sec++) {
 
         config_section section = config.sections[sec];
 
-        for (int arg=0;arg<section.argument_cnt;arg++) {
+        for (size_t arg=0;arg<section.argument_cnt;arg++) {
 
             config_argument argument = section.arguments[arg];
 

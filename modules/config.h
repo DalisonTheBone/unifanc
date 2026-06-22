@@ -28,4 +28,8 @@ typedef struct {
 //
 config_file get_config(char file_path[]);
 
+config_section get_section(config_file config, char section_name[]);
+
+bool free_config(config_file config);
+
 #endif
