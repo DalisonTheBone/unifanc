@@ -116,7 +116,7 @@ static op_list get_op_list(file config) {
     int index = 0;
     int buffer_index = 0;
     while (true) {
-        
+
         if (buffer_index >= 50) {
 
             op *temp = malloc(return_list.length*sizeof(op));
@@ -131,16 +131,16 @@ static op_list get_op_list(file config) {
 
         op current_op = parse_char(config, index);
         index += current_op.length;
-        if (current_op.token_type == white_space) {continue;}
-        if (current_op.token_type == new_line) {continue;}
-        if (current_op.token_type == line_comment) {continue;}
+        if (current_op.token_type == white_space) {free(current_op.token); continue;}
+        if (current_op.token_type == new_line) {free(current_op.token); continue;}
+        if (current_op.token_type == line_comment) {free(current_op.token); continue;}
         return_list.length++;
 
         buffer[buffer_index] = current_op;
         buffer_index++;
 
     }
-
+    free(buffer);
     return return_list;
 
 }
