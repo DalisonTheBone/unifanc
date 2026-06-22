@@ -6,11 +6,6 @@
 
 // Types
 typedef struct {
-    size_t len;
-    char *ptr;
-} string;
-
-typedef struct {
     size_t key_size;
     size_t value_size;
 

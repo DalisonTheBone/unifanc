@@ -243,3 +243,42 @@ config_file get_config(char file_path[]) {
     return return_config;
 }
 
+config_section get_section(config_file config, char section_name[]) {
+
+    for (int i=0;i<config.section_cnt;i++) {
+        config_section section = config.sections[i];
+        if (section.section_name == section_name) {
+            return section;
+        }
+
+    }
+
+    config_section default_section = {strlen(section_name),0,section_name,NULL};
+
+    return default_section;
+
+}
+
+bool free_config(config_file config) {
+
+    for (int sec=0;sec<config.section_cnt;sec++) {
+
+        config_section section = config.sections[sec];
+
+        for (int arg=0;arg<section.argument_cnt;arg++) {
+
+            config_argument argument = section.arguments[arg];
+
+            free(argument.key);
+            free(argument.value);
+
+        }
+
+        free(section.arguments);
+
+    }
+
+    free(config.sections);
+
+    return true;
+}
