@@ -91,8 +91,8 @@ void init_module(char module_path[]) {
     char *cmd = malloc(len + 3);
     memmove(cmd, module_path, len);
     memmove(cmd + len, " g", 3);
-    //printf("%s\n", cmd);
-    cmd_output cmd_responce = run_command(cmd);
+    
+    run_command(cmd);
     free(cmd);
 
 } 

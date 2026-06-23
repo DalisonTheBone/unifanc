@@ -292,7 +292,7 @@ range parse_range(char range_string[], size_t string_size) {
 
     if (range_string[0] == '[' && range_string[string_size-1] == ']') {
 
-        for (int i=1; i<string_size-1; i++) {
+        for (size_t i=1; i<string_size-1; i++) {
 
             if (range_string[i] == ',') {has_seperater = true; holder_index = 0; continue;}
 
