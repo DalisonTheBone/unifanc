@@ -1,176 +1,45 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <sys/stat.h>
-#include <dirent.h>
 #include <string.h>
-#include <stdlib.h>
+#include <stdbool.h>
 
-// Variables
-bool hwmon_sensors_available = false;
-bool hwmon_fc_available = false;
-bool proc_fc_available = false;
+// Consts
+char hwmon_path[] = "";
 
-char fc_hwmon[8] = {0};
-int hwmon_cnt = 0;
+// Types
+typedef struct {
+    bool enabled;
+    bool fan_control;
+    int min;
+    int max;
+    char *name;
+    size_t name_size;
+} sensor;
 
-// Functions 
-int find_fc_hwmon(void) {
-    DIR *dir = opendir("/sys/class/hwmon/");
+typedef struct {
+    size_t length;
+    sensor sensors[];
+} sensor_list;
 
-    if (dir == NULL) {return 1;}
+sensor_list get_sensors() {
 
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) {
-        
-        if (entry->d_name[0] == '.') {continue;}
-        hwmon_cnt++;
-        char location[36];
-        strcpy(location, "/sys/class/hwmon/");
-        strcat(location, entry->d_name);
-        strcat(location, "/pwm1_enable");
-        
-        struct stat st;
-        if (stat(location, &st) == 0 && fc_hwmon[0] == 0) {
-            strcpy(fc_hwmon, entry->d_name);
-        }
 
-    }
-
-    closedir(dir);
-
-    return 1;
-}
-
-int check_availablity(void) {
-    struct stat st;
-
-    // hwmon sensors
-    if (stat("/sys/class/hwmon", &st) == 0) {hwmon_sensors_available = true;}
-
-    // hwmon fan control
-    find_fc_hwmon();
-    if (fc_hwmon[0] != 0) {hwmon_fc_available = true;}
-    
-    // proc fanc control
-    if (stat("/proc/acpi/ibm/fan", &st) == 0) {proc_fc_available = true;}
-
-    return 0;
-}
-
-int enable_fc(void) {
-
-    system("modprobe -r thinkpad_acpi");
-    system("modprobe thinkpad_acpi fan_control=1");
-
-    char hwmon_location[40];
-    strcpy(hwmon_location, "/sys/class/hwmon/");
-    strcat(hwmon_location, fc_hwmon);
-    strcat(hwmon_location, "/pwm1_enable");
-
-    FILE *fptr;
-    fptr = fopen(hwmon_location, "w");
-    fprintf(fptr, "1");
-    fclose(fptr); 
-
-    return 0;
 
 }
 
-// Module Functions
-int init(void) {
+int main (int argc, char *argv[]) {
 
-    check_availablity();
-    enable_fc();
+    if (argc == 1) {return 0;}
+    printf("%d\n", strlen(argv[1]));
+    printf("%d d", ("d" == "d"));
 
-    return 0;
 }
+/*
+## Mandatory Commands ##
+g - returns highest tempature percent from sensors
+s %d - sets fan speed to percent of maximum
+i - sets computer so it can read sensors and set speeds (has to be able to run once at boot)
 
-int get_temp(void) {
-    check_availablity();
-
-    if (!hwmon_sensors_available) {printf("0"); return 1;}
-
-    DIR *dir = opendir("/sys/class/hwmon/");
-
-    if (dir == NULL) {return 1;}
-
-    int temp = 0;
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) {
-        
-        if (entry->d_name[0] == '.') {continue;}
-
-        char location[36];
-        strcpy(location, "/sys/class/hwmon/");
-        strcat(location, entry->d_name);
-        strcat(location, "/temp1_input");
-        
-        struct stat st;
-        if (stat(location, &st) == 0) {
-            
-            char result[7];
-            FILE *fp = fopen(location, "r");
-            if (!fp) return 1;
-
-            if (fgets(result, sizeof(result), fp) != NULL) {}
-
-            fclose(fp);
-
-            if (atoi(result) / 1000 > temp) {temp = atoi(result) / 1000;}
-
-        }
-
-    }
-
-    printf("%d", temp);
-
-    return 0;
-}
-
-int set_speed(int speed) {
-    
-    check_availablity();
-
-    if (hwmon_fc_available) {
-
-        char hwmon_location[36];
-        strcpy(hwmon_location, "/sys/class/hwmon/");
-        strcat(hwmon_location, fc_hwmon);
-        strcat(hwmon_location, "/pwm1");
-
-        FILE *fptr;
-        fptr = fopen(hwmon_location, "w");
-        fprintf(fptr, "%d", speed*255/100);
-        fclose(fptr); 
-
-    }
-
-    if (!hwmon_fc_available && proc_fc_available) {
-        
-        char proc_location[] = "/proc/acpi/ibm/fan";
-
-        FILE *fptr;
-        fptr = fopen(proc_location, "w");
-
-        if (speed*7/100 == 0) {fprintf(fptr, "level auto");}
-        if (speed*7/100 != 0) {fprintf(fptr, "level %d", speed*7/100);}
-
-        fclose(fptr); 
-
-    }
-
-    return 0;
-}
-
-// init
-int main(int argc, char *argv[]) {
-    if (argc == 1) {return 1;}
-
-    if (*argv[1] == 'i') {init();}
-    if (*argv[1] == 'g') {get_temp();}
-
-    if (*argv[1] == 's' && argc >= 3) {set_speed(atoi(argv[2]));}
-    
-    return 0;
-}
+## Optional Commands ##
+h - help command, returns info on module commands
+d - returns default configuration
+*/
